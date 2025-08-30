@@ -17,11 +17,13 @@ void taskFunc(int id, int delay) {
 
 int main() {
     srand(0);
-    RequestHandler rh;
+    
+    ThreadPool pool;
+    pool.start();
     for (int i = 0; i < 20; i++)
     {
-        rh.pushRequest(taskFunc, i, 1 + rand() % 4);
+        pool.push_task(taskFunc, i, 1 + rand() % 4);
     }
-    
+    pool.stop();
     return 0;
 }

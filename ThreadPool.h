@@ -5,8 +5,6 @@
 #include <thread>
 #include <functional>
 
-class InterruptableThread;
-
 void taskFunc(int id, int delay);
 // удобное определение для сокращения кода
 typedef std::function<void()> task_type;

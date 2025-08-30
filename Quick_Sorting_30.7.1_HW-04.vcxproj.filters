@@ -18,18 +18,12 @@
     <ClInclude Include="BlockedQueue.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="RequestHandler.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="ThreadPool.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="RequestHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="ThreadPool.cpp">

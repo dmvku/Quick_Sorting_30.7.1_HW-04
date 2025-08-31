@@ -1,17 +1,22 @@
 #pragma once
 #include "BlockedQueue.h"
+//#include "QuickSort.h"
 
 #include <vector>
 #include <thread>
+#include <future>
+#include <memory>
 #include <functional>
 
-void taskFunc(int id, int delay);
+//void taskFunc(int id, int delay);
 // удобное определение для сокращения кода
 typedef std::function<void()> task_type;
 // тип указатель на функцию, которая является эталоном для функций задач
-typedef void (*FuncType) (int, int);
+typedef void (*FuncType) (long*, long, long,
+    std::shared_ptr<std::promise<void>>);
 // пул потоков
-class ThreadPool {
+class ThreadPool
+{
 public:
     ThreadPool();
     
@@ -19,8 +24,9 @@ public:
     void start();
     // остановка:
     void stop();
-    // проброс задач
-    void push_task(FuncType f, int id, int arg);
+    // проброс задач    
+    void push_task(FuncType f, long* array, long left, long right,
+        std::shared_ptr<std::promise<void>>);
     // функция входа для потока
     void threadFunc(int qindex);
     
@@ -34,3 +40,4 @@ private:
     // для равномерного распределения задач
     int m_index{ 0 };
 };
+

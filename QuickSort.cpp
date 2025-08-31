@@ -1,10 +1,20 @@
 #include "QuickSort.h"
 
 #include <iostream>
-#include <thread>
+//#include <thread>
 #include <future>
 #include <random>
 #include <chrono>
+
+Array::Array()
+{
+    threadPool_.start();
+}
+
+Array::~Array()
+{
+    threadPool_.stop();
+}
 
 void Array::start()
 {
@@ -24,7 +34,10 @@ void Array::start()
     // многопоточный запуск
     std::cout << "Start asynchronous sorting...\n";
     auto start = std::chrono::high_resolution_clock::now();
-    quickSort(array_, 0, numberOfElements_ - 1);
+    counter_ptr_ = std::make_shared<std::promise<void>>();
+    auto endSorting = counter_ptr_->get_future();
+    quickSortThread(array_, 0, numberOfElements_ - 1, counter_ptr_);
+    endSorting.wait();
     auto finish = std::chrono::high_resolution_clock::now();
     double sortingTime = static_cast<double>(
         (std::chrono::duration<double>(finish - start)).count());
@@ -36,7 +49,7 @@ void Array::start()
     delete[] array_;
 
     // однопоточный запуск
-    isThreadSorting_ = false;
+    isMultithreadedSorting_ = false;
     std::cout << "Start synchronous sorting...\n";
     start = std::chrono::high_resolution_clock::now();
     quickSort(array, 0, numberOfElements_ - 1);
@@ -88,6 +101,42 @@ void Array::swapElements(long& first, long& second)
     second = temp;
 }
 
+void Array::quickSortThread(long* array, long left, long right,
+    std::shared_ptr<std::promise<void>> counter_ptr)
+{
+    if (left >= right)
+    {        
+        std::lock_guard<std::mutex> locker(countLock_);
+        if (counter_ptr_.use_count() <= 2)
+        {
+            counter_ptr_->set_value();
+        }
+        return;
+    }
+
+    long left_bound = left;
+    long right_bound = right;
+
+    reallocationOfElements(array, left_bound, right_bound);
+
+    if (isMultithreadedSorting_ && (right_bound - left > 10000))
+    {
+        // если элементов в левой части больше чем 10000
+        // вызываем асинхронно рекурсию для правой части
+        threadPool_.push_task(&Array::quickSortThread, std::ref(array),
+            left, right, std::make_shared<std::promise<void>>(counter_ptr));
+        /*auto f = async(std::launch::async, [&]() {
+            quickSort(array, left, right_bound);
+            });*/
+        quickSort(array, left_bound, right);
+    }
+    else {
+        // запускаем обе части синхронно
+        quickSort(array, left, right_bound);
+        quickSort(array, left_bound, right);
+    }
+}
+
 void Array::quickSort(long* array, long left, long right)
 {
     if (left >= right)
@@ -98,6 +147,14 @@ void Array::quickSort(long* array, long left, long right)
     long left_bound = left;
     long right_bound = right;
 
+    reallocationOfElements(array, left_bound, right_bound);
+
+    quickSort(array, left, right_bound);
+    quickSort(array, left_bound, right);    
+}
+
+void Array::reallocationOfElements(long* array, long& left_bound, long& right_bound)
+{
     long middle = array[(left_bound + right_bound) / 2];
 
     do {
@@ -118,21 +175,6 @@ void Array::quickSort(long* array, long left, long right)
             right_bound--;
         }
     } while (left_bound <= right_bound);
-
-    if (isThreadSorting_ && (right_bound - left > 10000))
-    {
-        // если элементов в левой части больше чем 10000
-        // вызываем асинхронно рекурсию для правой части
-        auto f = async(std::launch::async, [&]() {
-            quickSort(array, left, right_bound);
-            });
-        quickSort(array, left_bound, right);
-    }
-    else {
-        // запускаем обе части синхронно
-        quickSort(array, left, right_bound);
-        quickSort(array, left_bound, right);
-    }
 }
 
 bool Array::checkSorting(long* array)
@@ -148,11 +190,9 @@ bool Array::checkSorting(long* array)
     return true;
 }
 
-
-
 void Array::printResult(double sortingTime)
 {
-    std::cout << (isThreadSorting_
+    std::cout << (isMultithreadedSorting_
         ? "Asynchronous sorting time: " : "Synchronous sorting time: ")
         << sortingTime << " seconds\n";
 }

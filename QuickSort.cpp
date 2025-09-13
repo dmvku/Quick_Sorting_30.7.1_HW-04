@@ -30,13 +30,13 @@ void Array::start()
     std::cout << "Number of the threads: " << numberOfCores_ << "\n";
     std::cout << "Number of elements : " << numberOfElements_ << "\n";
 
-    // многопоточный запуск    
+    // РјРЅРѕРіРѕРїРѕС‚РѕС‡РЅС‹Р№ Р·Р°РїСѓСЃРє    
     std::cout << "Start asynchronous sorting...\n";
     auto start = std::chrono::high_resolution_clock::now();
     counter_ptr_ = std::make_shared<std::promise<void>>();
     auto endSorting = counter_ptr_->get_future();
     quickSortThread(array_, 0, numberOfElements_ - 1, counter_ptr_);
-    // ждем, пока выполняются подзадачи (число подзадач больше нуля)
+    // Р¶РґРµРј, РїРѕРєР° РІС‹РїРѕР»РЅСЏСЋС‚СЃСЏ РїРѕРґР·Р°РґР°С‡Рё (С‡РёСЃР»Рѕ РїРѕРґР·Р°РґР°С‡ Р±РѕР»СЊС€Рµ РЅСѓР»СЏ)
     while(taskCounter_);
     endSorting.wait();
     auto finish = std::chrono::high_resolution_clock::now();
@@ -50,7 +50,7 @@ void Array::start()
     
     delete[] array_;
 
-    // однопоточный запуск
+    // РѕРґРЅРѕРїРѕС‚РѕС‡РЅС‹Р№ Р·Р°РїСѓСЃРє
     isMultithreadedSorting_ = false;    
     std::cout << "Start synchronous sorting...\n";
     start = std::chrono::high_resolution_clock::now();
@@ -118,16 +118,16 @@ void Array::quickSortThread(long* array, long left, long right,
 
     if (right_bound - left > 10'000) 
     {
-        // если элементов в левой части больше чем 10000
-        // вызываем асинхронно рекурсию для левой части         
+        // РµСЃР»Рё СЌР»РµРјРµРЅС‚РѕРІ РІ Р»РµРІРѕР№ С‡Р°СЃС‚Рё Р±РѕР»СЊС€Рµ С‡РµРј 10000
+        // РІС‹Р·С‹РІР°РµРј Р°СЃРёРЅС…СЂРѕРЅРЅРѕ СЂРµРєСѓСЂСЃРёСЋ РґР»СЏ Р»РµРІРѕР№ С‡Р°СЃС‚Рё         
         threadPool_.push_task([=]() {
             Array::functionTotransferToThePool (array, left, right_bound); }); 
-        // для правой - без передачи в пул с контролем числа задач
+        // РґР»СЏ РїСЂР°РІРѕР№ - Р±РµР· РїРµСЂРµРґР°С‡Рё РІ РїСѓР» СЃ РєРѕРЅС‚СЂРѕР»РµРј С‡РёСЃР»Р° Р·Р°РґР°С‡
         functionTotransferToThePool(array, left_bound, right);
         //quickSortThread(array, left_bound, right, nullptr);        
     }
     else {
-        // запускаем обе части синхронно        
+        // Р·Р°РїСѓСЃРєР°РµРј РѕР±Рµ С‡Р°СЃС‚Рё СЃРёРЅС…СЂРѕРЅРЅРѕ   
         quickSortThread(array, left, right_bound, nullptr);
         quickSortThread(array, left_bound, right, nullptr);
     }
@@ -178,7 +178,7 @@ void Array::reallocationOfElements(long* array, long& left_bound, long& right_bo
             right_bound--;
         }
 
-        //Меняем элементы местами
+        //РњРµРЅСЏРµРј СЌР»РµРјРµРЅС‚С‹ РјРµСЃС‚Р°РјРё
         if (left_bound <= right_bound)
         {
             swapElements(array[left_bound], array[right_bound]);

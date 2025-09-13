@@ -25,7 +25,8 @@ private:
 	void selectNumberOfElements();
 	void createArray(long* array);
 	void copyingAReferenceArray(long* array_, long* array);	
-	void quickSortThread(long* array, long left, long right, std::shared_ptr<std::promise<void>> task);
+	void quickSortThread(long* array, long left, long right,
+		std::shared_ptr<std::promise<void>> task);
 	void functionTotransferToThePool(long* array, long left, long right);
 	void quickSort(long* array, long left, long right);
 	void reallocationOfElements(long* array, long& left, long& right);

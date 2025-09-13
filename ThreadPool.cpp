@@ -37,7 +37,6 @@ void ThreadPool::stop()
 
 void ThreadPool::push_task(task_type task)
 {
-    //std::cout << "Push_Task\n";
     // вычисляем индекс очереди, куда положим задачу
     int queue_to_push = m_index++ % m_thread_count;    
     // кладем в очередь

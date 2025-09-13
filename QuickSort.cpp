@@ -36,6 +36,7 @@ void Array::start()
     counter_ptr_ = std::make_shared<std::promise<void>>();
     auto endSorting = counter_ptr_->get_future();
     quickSortThread(array_, 0, numberOfElements_ - 1, counter_ptr_);
+    // ждем, пока выполн€ютс€ подзадачи (число подзадач больше нул€)
     while(taskCounter_);
     endSorting.wait();
     auto finish = std::chrono::high_resolution_clock::now();
@@ -69,7 +70,7 @@ void Array::start()
 void Array::selectNumberOfElements()
 {
     std::cout <<
-        "Select the number of elements in the array (recommend 10000000): ";
+        "Select the number of elements in the array (recommend 10'000'000): ";
     std::cin >> numberOfElements_;
 
     if (numberOfElements_ < 1'000)
@@ -97,7 +98,8 @@ void Array::copyingAReferenceArray(long* array_, long* array)
     }
 }
 
-void Array::quickSortThread(long* array, long left, long right, std::shared_ptr<std::promise<void>> task)
+void Array::quickSortThread(long* array, long left, long right,
+    std::shared_ptr<std::promise<void>> task)
 {        
     if (left >= right)
     {   
@@ -114,12 +116,15 @@ void Array::quickSortThread(long* array, long left, long right, std::shared_ptr<
 
     reallocationOfElements(array, left_bound, right_bound);
 
-    if (isMultithreadedSorting_ && right_bound - left > 10000) 
+    if (right_bound - left > 10'000) 
     {
         // если элементов в левой части больше чем 10000
-        // вызываем асинхронно рекурсию дл€ правой части         
-        threadPool_.push_task([=]() { Array::functionTotransferToThePool (array, left, right_bound); });            
-        quickSortThread(array, left_bound, right, nullptr);        
+        // вызываем асинхронно рекурсию дл€ левой части         
+        threadPool_.push_task([=]() {
+            Array::functionTotransferToThePool (array, left, right_bound); }); 
+        // дл€ правой - без передачи в пул с контролем числа задач
+        functionTotransferToThePool(array, left_bound, right);
+        //quickSortThread(array, left_bound, right, nullptr);        
     }
     else {
         // запускаем обе части синхронно        

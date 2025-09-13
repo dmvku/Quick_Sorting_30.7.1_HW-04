@@ -12,7 +12,6 @@ class BlockedQueue
 public:
     void push(T& item)
     {
-        //std::cout << "Push\n";
         std::lock_guard<std::mutex> l(m_locker);
         // обычный потокобезопасный push
         m_task_queue.push(item);
@@ -22,8 +21,7 @@ public:
     }
     // блокирующий метод получения элемента из очереди
     void pop(T& item)
-    {
-        //std::cout << "Pop\n";
+    {        
         std::unique_lock<std::mutex> l(m_locker);
         if (m_task_queue.empty())
         {
@@ -37,7 +35,6 @@ public:
     // возвращает false, если очередь пуста
     bool fast_pop(T& item)
     {
-        //std::cout << "Pop_Fast\n";
         std::lock_guard<std::mutex> l(m_locker);
         if (m_task_queue.empty())
         {

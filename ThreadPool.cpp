@@ -35,13 +35,11 @@ void ThreadPool::stop()
     }        
 }
 
-void ThreadPool::push_task(FuncType f, long* array, long left, long right,
-    std::shared_ptr<std::promise<void>> counter)
+void ThreadPool::push_task(task_type task)
 {
+    //std::cout << "Push_Task\n";
     // вычисляем индекс очереди, куда положим задачу
-    int queue_to_push = m_index++ % m_thread_count;
-    // формируем функтор    
-    task_type task = [=] { f(array, left, right, counter); };
+    int queue_to_push = m_index++ % m_thread_count;    
     // кладем в очередь
     m_thread_queues[queue_to_push].push(task);
 }

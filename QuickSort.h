@@ -19,7 +19,6 @@ private:
 	std::atomic<long> taskCounter_;
 
 	long numberOfElements_{ 0 };
-	size_t numberOfCores_ = std::thread::hardware_concurrency();	
 	bool isMultithreadedSorting_ = true;
 
 	void selectNumberOfElements();

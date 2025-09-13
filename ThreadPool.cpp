@@ -77,3 +77,8 @@ void ThreadPool::threadFunc(int qindex)
         task_to_do();
     }
 }
+
+int ThreadPool::get_m_thread_count()
+{
+    return m_thread_count;
+}

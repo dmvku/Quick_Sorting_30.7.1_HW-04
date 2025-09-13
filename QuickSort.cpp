@@ -24,10 +24,10 @@ void Array::start()
     createArray(array_);
     copyingAReferenceArray(array_, array);
 
-    std::cout << "CPU cores detected: " << numberOfCores_ << "\n";
-    numberOfCores_ = std::thread::hardware_concurrency() != 0
-        ? std::thread::hardware_concurrency() : 4;
-    std::cout << "Number of the threads: " << numberOfCores_ << "\n";
+    std::cout << "CPU cores detected: "
+        << std::thread::hardware_concurrency() << "\n";    
+    std::cout << "Number of the threads: "
+        << threadPool_.get_m_thread_count() << "\n";
     std::cout << "Number of elements : " << numberOfElements_ << "\n";
 
     // многопоточный запуск    

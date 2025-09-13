@@ -70,6 +70,7 @@ public:
     void push_task(task_type task);
     // функция входа для потока
     void threadFunc(int qindex);
+    int get_m_thread_count();
     
 private:
     // количество потоков

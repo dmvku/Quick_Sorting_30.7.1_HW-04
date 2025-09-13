@@ -23,8 +23,8 @@ void ThreadPool::stop()
 {
     for (int i = 0; i < m_thread_count; i++)
     {
-        // êëàäåì çàäà÷ó-ïóñòûøêó â êàæäóþ î÷åðåäü
-        // äëÿ çàâåðøåíèÿ ïîòîêà
+        // ÐºÐ»Ð°Ð´ÐµÐ¼ Ð·Ð°Ð´Ð°Ñ‡Ñƒ-Ð¿ÑƒÑÑ‚Ñ‹ÑˆÐºÑƒ Ð² ÐºÐ°Ð¶Ð´ÑƒÑŽ Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑŒ
+        // Ð´Ð»Ñ Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¸Ñ Ð¿Ð¾Ñ‚Ð¾ÐºÐ°
         task_type empty_task;
         m_thread_queues[i].push(empty_task);
     }
@@ -37,9 +37,9 @@ void ThreadPool::stop()
 
 void ThreadPool::push_task(task_type task)
 {
-    // âû÷èñëÿåì èíäåêñ î÷åðåäè, êóäà ïîëîæèì çàäà÷ó
+    // Ð²Ñ‹Ñ‡Ð¸ÑÐ»ÑÐµÐ¼ Ð¸Ð½Ð´ÐµÐºÑ Ð¾Ñ‡ÐµÑ€ÐµÐ´Ð¸, ÐºÑƒÐ´Ð° Ð¿Ð¾Ð»Ð¾Ð¶Ð¸Ð¼ Ð·Ð°Ð´Ð°Ñ‡Ñƒ
     int queue_to_push = m_index++ % m_thread_count;    
-    // êëàäåì â î÷åðåäü
+    // ÐºÐ»Ð°Ð´ÐµÐ¼ Ð² Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑŒ
     m_thread_queues[queue_to_push].push(task);
 }
 
